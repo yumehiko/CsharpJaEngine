@@ -9,6 +9,7 @@ namespace JaEngine.Text
     public class JChar
     {
         public char Value { get; }
+        public float Width { get; }
         public CharacterClass CharacterClass { get; }
         
         /// <summary>
@@ -18,9 +19,10 @@ namespace JaEngine.Text
         public float MaeAki { get; private set; }
         public float AtoAki { get; private set; }
 
-        public JChar(char value)
+        public JChar(char value, JTextConfig config)
         {
             Value = value;
+            Width = config.CharMetricsProvider.GetWidth(Value, config.FontSize);
             
             // 文字からタイプを判別し、設定する。
             CharacterClass = GetCharacterClass(value);
@@ -52,6 +54,15 @@ namespace JaEngine.Text
         public static CharacterClass GetCharacterClass(char c)
         {
             throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// 前アキを追加する。
+        /// </summary>
+        /// <param name="value"></param>
+        public void AddMaeAki(float value)
+        {
+            MaeAki += value;
         }
     }
 }

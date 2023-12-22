@@ -1,19 +1,32 @@
 using System.Collections.Generic;
 using JaEngine.Text;
 using System;
+using JaEngine.Bridge;
 
 namespace JaEngine.Text
 {
     public class JTextConfig
     {
         /// <summary>
+        /// フォントの基本サイズ。
+        /// </summary>
+        public float FontSize { get; }
+
+        /// <summary>
         /// 行長。文字の長さ単位。
         /// </summary>
-        public int LineLength { get; set; }
+        public int LineLength { get; }
         
-        public JTextConfig(int lineLength)
+        /// <summary>
+        /// 文字幅を取得するためのプロバイダ。
+        /// </summary>
+        public ICharMetricsProvider CharMetricsProvider { get; }
+        
+        public JTextConfig(float fontSize, int lineLength, ICharMetricsProvider charMetricsProvider)
         {
+            FontSize = fontSize;
             LineLength = lineLength;
+            CharMetricsProvider = charMetricsProvider;
         }
 
         /// <summary>

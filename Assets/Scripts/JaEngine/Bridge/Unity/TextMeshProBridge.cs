@@ -36,7 +36,7 @@ namespace JaEngine.Bridge.Unity
 
             foreach (var jLine in jText.Lines)
             {
-                foreach (var jChar in jLine.JChars)
+                foreach (var jChar in jLine.Body)
                 {
                     tmpText.text += jChar.Value;
                     tmpText.ForceMeshUpdate();
@@ -56,7 +56,7 @@ namespace JaEngine.Bridge.Unity
 
             foreach (var jLine in jText.Lines)
             {
-                foreach (var jChar in jLine.JChars)
+                foreach (var jChar in jLine.Body)
                 {
                     stringBuilder.Append(jChar.Value);
                 }
@@ -73,7 +73,7 @@ namespace JaEngine.Bridge.Unity
 
             foreach (var line in jText.Lines)
             {
-                foreach (var jChar in line.JChars)
+                foreach (var jChar in line.Body)
                 {
                     UpdateVertexPosition(jChar, charIndex);
                     charIndex++;

@@ -8,12 +8,14 @@ namespace JaEngine.Text
     public class JText
     {
         public List<JLine> Lines { get; }
+        public JTextConfig Config { get; }
 
         public JText(string rawText, JTextConfig config)
         {
+            Config = config;
             try
             {
-                Lines = GenerateJLines(rawText, config);
+                Lines = GenerateJLines(rawText);
             }
             catch (ArgumentException e)
             {
@@ -26,10 +28,9 @@ namespace JaEngine.Text
         /// 与えられた文字列から、行を生成する。
         /// </summary>
         /// <param name="rawText"></param>
-        /// <param name="config"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        private List<JLine> GenerateJLines(string rawText, JTextConfig config)
+        private List<JLine> GenerateJLines(string rawText)
         {
             if (rawText.Length == 0)
             {
@@ -38,13 +39,13 @@ namespace JaEngine.Text
             var result = new List<JLine>();
             var rawTextIndex = 0;
             // 最初の行を作成。
-            var currentLine = new JLine(config);
+            var currentLine = new JLine(Config);
 
             // すべての文字が処理されるまで繰り返す。
             while (rawTextIndex < rawText.Length)
             {
                 // 分割禁止グループを作成する。
-                var prohibitedGroup = CreateProhibitedGroup(rawText, ref rawTextIndex);
+                var prohibitedGroup = CreateUnBreakableGroup(rawText, ref rawTextIndex);
                 //単純追加できるか確認し、できるなら単純追加する。
                 if (currentLine.CanAddProhibitedGroup(prohibitedGroup))
                 {
@@ -62,13 +63,13 @@ namespace JaEngine.Text
                         currentLine.AddProhibitedGroup(prohibitedGroup);
                         currentLine.AdjustLineWidth();
                         result.Add(currentLine);
-                        currentLine = new JLine(config);
+                        currentLine = new JLine(Config);
                         continue;
                     // 追い出しの場合、現在の行は確定し、新たな行を定義し、そこにグループを追加する。
                     case AdjustType.Oidashi:
                         currentLine.AdjustLineWidth();
                         result.Add(currentLine);
-                        currentLine = new JLine(config);
+                        currentLine = new JLine(Config);
                         currentLine.AddProhibitedGroup(prohibitedGroup);
                         continue;
                     default:
@@ -85,15 +86,15 @@ namespace JaEngine.Text
         /// <param name="rawText"></param>
         /// <param name="rawTextIndex"></param>
         /// <returns></returns>
-        private List<JChar> CreateProhibitedGroup(string rawText, ref int rawTextIndex)
+        private UnBreakableGroup CreateUnBreakableGroup(string rawText, ref int rawTextIndex)
         {
-            var prohibitedGroup = new List<JChar>();
+            var prohibitedGroup = new UnBreakableGroup(Config);
             JChar previousChar = null;
 
             while (rawTextIndex < rawText.Length)
             {
                 var currentChar = rawText[rawTextIndex];
-                var jChar = new JChar(currentChar);
+                var jChar = new JChar(currentChar, Config);
 
                 if (previousChar != null && !IsProhibitedPair(previousChar, jChar))
                 {

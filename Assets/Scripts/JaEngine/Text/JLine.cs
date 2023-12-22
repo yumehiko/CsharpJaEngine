@@ -5,14 +5,15 @@ namespace JaEngine.Text
 {
     public class JLine
     {
-        public List<JChar> JChars { get; }
+        public List<UnBreakableGroup> Body { get; }
         private float _currentWidth;
         private readonly JTextConfig _config;
         private const float Epsilon = 0.001f;
+        private JChar _lastChar;
 
         public JLine(JTextConfig config)
         {
-            JChars = new List<JChar>();
+            Body = new List<UnBreakableGroup>();
             _config = config;
             _currentWidth = 0.0f;
         }
@@ -20,34 +21,34 @@ namespace JaEngine.Text
         /// <summary>
         /// 指定した分割禁止グループを、単純追加できるかを返す。
         /// </summary>
-        /// <param name="prohibitedGroup"></param>
+        /// <param name="unBreakableGroup"></param>
         /// <returns></returns>
-        public bool CanAddProhibitedGroup(List<JChar> prohibitedGroup)
+        public bool CanAddProhibitedGroup(UnBreakableGroup unBreakableGroup)
         {
-            double groupWidth = CalculateGroupWidth(prohibitedGroup);
+            double groupWidth = CalculateGroupWidth(unBreakableGroup);
             return _currentWidth + groupWidth <= _config.LineLength + Epsilon;
         }
         
         /// <summary>
         /// 分割グループをこの行に追加する。
         /// </summary>
-        /// <param name="prohibitedGroup"></param>
-        public void AddProhibitedGroup(List<JChar> prohibitedGroup)
+        /// <param name="unBreakableGroup"></param>
+        public void AddProhibitedGroup(UnBreakableGroup unBreakableGroup)
         {
-            JChars.AddRange(prohibitedGroup);
-            _currentWidth += CalculateGroupWidth(prohibitedGroup);
+            Body.Add(unBreakableGroup);
+            _currentWidth += CalculateGroupWidth(unBreakableGroup);
         }
 
         /// <summary>
         /// 溢れが発生する行に対する追加の場合の、調整タイプを返す。
         /// </summary>
-        /// <param name="prohibitedGroup"></param>
+        /// <param name="unBreakableGroup"></param>
         /// <returns></returns>
-        public AdjustType GetAdjustType(List<JChar> prohibitedGroup)
+        public AdjustType GetAdjustType(UnBreakableGroup unBreakableGroup)
         {
             //単純追加できないなら、追い込み処理か追い出し処理かを比較し、判定する。
-            var oikomiAmount = GetOikomiAmount(prohibitedGroup);
-            var oidashiAmount = GetOidashiAmount(prohibitedGroup);
+            var oikomiAmount = GetOikomiAmount(unBreakableGroup);
+            var oidashiAmount = GetOidashiAmount(unBreakableGroup);
             
             // oikomiAmountが負の値を返した場合、追い込み処理は不可能なので追い出し処理とする。
             if (oikomiAmount < 0)
@@ -72,7 +73,7 @@ namespace JaEngine.Text
         /// </summary>
         /// <param name="addingGroup"></param>
         /// <returns></returns>
-        private float GetOikomiAmount(List<JChar> addingGroup)
+        private float GetOikomiAmount(UnBreakableGroup addingGroup)
         {
             throw new NotImplementedException();
         }
@@ -83,7 +84,7 @@ namespace JaEngine.Text
         /// <param name="addingGroup"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        private float GetOidashiAmount(List<JChar> addingGroup)
+        private float GetOidashiAmount(UnBreakableGroup addingGroup)
         {
             throw new NotImplementedException();
         }
@@ -91,10 +92,10 @@ namespace JaEngine.Text
         /// <summary>
         /// 指定された分割グループの長さを算出する。
         /// </summary>
-        /// <param name="prohibitedGroup"></param>
+        /// <param name="unBreakableGroup"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        private float CalculateGroupWidth(List<JChar> prohibitedGroup)
+        private float CalculateGroupWidth(UnBreakableGroup unBreakableGroup)
         {
             // TODO: Implement CalculateGroupWidth.
             throw new NotImplementedException();
